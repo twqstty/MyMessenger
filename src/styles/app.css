@@ -1,0 +1,94 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.app {
+  display: flex;
+  height: 100vh;
+}
+
+.chat-list {
+  width: 250px;
+  background: #1e1e1e;
+  color: white;
+  padding: 10px;
+}
+
+.chat-item {
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.chat-item:hover {
+  background: #333;
+}
+
+.chat-item.active {
+  background: #444;
+}
+
+.chat-window {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #f5f5f5;
+}
+
+.chat-header {
+  padding: 15px;
+  background: #fff;
+  font-weight: bold;
+  border-bottom: 1px solid #ddd;
+}
+
+.messages {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+}
+
+
+.message.me {
+  background: #4caf50;
+  color: white;
+  margin-left: auto;
+}
+
+.message-input {
+  display: flex;
+  padding: 10px;
+  background: white;
+  border-top: 1px solid #ddd;
+}
+
+.message-input input {
+  flex: 1;
+  padding: 10px;
+}
+
+.message-input button {
+  margin-left: 10px;
+  padding: 10px 15px;
+}
+.message {
+  margin-bottom: 10px;
+  padding: 10px 15px;
+  background: #e0e0e0;
+  border-radius: 20px;
+  width: fit-content;
+
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
