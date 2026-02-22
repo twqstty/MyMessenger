@@ -56,7 +56,7 @@ function ChatWindow({ user }) {
   return (
     <div className="chat-window">
       <div className="chat-header">
-        Global Chat
+        SigmaChat
       </div>
 
       <div className="messages">
