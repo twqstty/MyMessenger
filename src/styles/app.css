@@ -81,7 +81,26 @@ body {
 
   animation: fadeIn 0.3s ease;
 }
+.reactions {
+  margin-top: 5px;
+}
 
+.reactions button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  margin-right: 6px;
+}
+
+.reaction-counts {
+  margin-top: 4px;
+}
+
+.reaction-counts span {
+  margin-right: 8px;
+  font-size: 13px;
+}
 @keyframes fadeIn {
   from {
     opacity: 0;

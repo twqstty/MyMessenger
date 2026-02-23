@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { db } from "../firebase/firebase";
+import { doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 import {
   collection,
   addDoc,
@@ -61,11 +62,13 @@ function ChatWindow({ user }) {
 
       <div className="messages">
         {messages.map((msg) => (
-          <Message
+            <Message
             key={msg.id}
             message={msg}
             isMe={msg.senderId === user.uid}
-          />
+            toggleReaction={toggleReaction}
+            user={user}
+            />
         ))}
         <div ref={bottomRef}></div>
       </div>
@@ -74,5 +77,25 @@ function ChatWindow({ user }) {
     </div>
   );
 }
+const toggleReaction = async (messageId, emoji, currentReactions) => {
+  const messageRef = doc(
+    db,
+    "chats",
+    "globalChat",
+    "messages",
+    messageId
+  );
 
+  const users = currentReactions?.[emoji] || [];
+
+  if (users.includes(user.uid)) {
+    await updateDoc(messageRef, {
+      [`reactions.${emoji}`]: arrayRemove(user.uid),
+    });
+  } else {
+    await updateDoc(messageRef, {
+      [`reactions.${emoji}`]: arrayUnion(user.uid),
+    });
+  }
+};
 export default ChatWindow;
