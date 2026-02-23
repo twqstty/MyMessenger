@@ -111,3 +111,63 @@ body {
     transform: translateY(0);
   }
 }
+.message {
+  padding: 8px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.reaction-counts{
+  cursor: pointer;
+  display: flex;
+  gap: 4px;
+}
+.reaction-popup {
+  position: absolute;
+  bottom: 100%;
+  left: 10px;
+  background: white;
+  padding: 6px 10px;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  display: flex;
+  gap: 8px;
+  animation: fadeIn 0.15s ease-in-out;
+  pointer-events: auto;
+  z-index: 10;
+  cursor: pointer;
+}
+.reaction-popup .emoji-option {
+  font-size: 20px;
+  transition: transform 0.1s;
+  cursor: pointer;
+}
+
+.emoji-option {
+  font-size: 18px;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.emoji-option:hover {
+  transform: scale(1.2);
+}
+
+.reaction-counts {
+  margin-top: 5px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.reaction-badge {
+  background: #f0f0f0;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 13px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}

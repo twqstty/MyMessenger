@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { auth } from "./firebase/firebase";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, getRedirectResult } from "firebase/auth";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 
@@ -15,6 +15,12 @@ function App() {
     });
 
     return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    getRedirectResult(auth).catch((error) => {
+      console.error(error);
+    });
   }, []);
 
   if (loading) return <div>Loading...</div>;

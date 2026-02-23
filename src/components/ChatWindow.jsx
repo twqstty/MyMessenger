@@ -12,6 +12,7 @@ import {
 import Message from "./Message";
 import MessageInput from "./MessageInput";
 
+// ...existing code...
 function ChatWindow({ user }) {
   if (!user) return null;
 
@@ -54,6 +55,29 @@ function ChatWindow({ user }) {
     );
   };
 
+  // Переместите toggleReaction внутрь компонента
+  const toggleReaction = async (messageId, emoji, currentReactions) => {
+    const messageRef = doc(
+      db,
+      "chats",
+      "globalChat",
+      "messages",
+      messageId
+    );
+
+    const users = currentReactions?.[emoji] || [];
+
+    if (users.includes(user.uid)) {
+      await updateDoc(messageRef, {
+        [`reactions.${emoji}`]: arrayRemove(user.uid),
+      });
+    } else {
+      await updateDoc(messageRef, {
+        [`reactions.${emoji}`]: arrayUnion(user.uid),
+      });
+    }
+  };
+
   return (
     <div className="chat-window">
       <div className="chat-header">
@@ -77,25 +101,4 @@ function ChatWindow({ user }) {
     </div>
   );
 }
-const toggleReaction = async (messageId, emoji, currentReactions) => {
-  const messageRef = doc(
-    db,
-    "chats",
-    "globalChat",
-    "messages",
-    messageId
-  );
-
-  const users = currentReactions?.[emoji] || [];
-
-  if (users.includes(user.uid)) {
-    await updateDoc(messageRef, {
-      [`reactions.${emoji}`]: arrayRemove(user.uid),
-    });
-  } else {
-    await updateDoc(messageRef, {
-      [`reactions.${emoji}`]: arrayUnion(user.uid),
-    });
-  }
-};
 export default ChatWindow;
