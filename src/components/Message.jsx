@@ -1,7 +1,35 @@
 import { Link } from "react-router-dom";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 
-function Message({ message, isMe, authorProfile }) {
+function formatTime(ts) {
+  if (!ts) return "…"; // пока сервер не проставил время
+  const d = typeof ts.toDate === "function" ? ts.toDate() : new Date(ts);
+  // HH:MM
+  const hh = String(d.getHours()).padStart(2, "0");
+  const mm = String(d.getMinutes()).padStart(2, "0");
+  return `${hh}:${mm}`;
+}
+
+function formatDateIfNotToday(ts) {
+  if (!ts) return "";
+  const d = typeof ts.toDate === "function" ? ts.toDate() : new Date(ts);
+  const now = new Date();
+
+  const sameDay =
+    d.getFullYear() === now.getFullYear() &&
+    d.getMonth() === now.getMonth() &&
+    d.getDate() === now.getDate();
+
+  if (sameDay) return "";
+
+  // DD.MM.YYYY
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mo = String(d.getMonth() + 1).padStart(2, "0");
+  const yy = d.getFullYear();
+  return `${dd}.${mo}.${yy}`;
+}
+
+function Message({ message, isMe, authorProfile, toggleReaction, currentUid }) {
   const [showReactions, setShowReactions] = useState(false);
   const popupRef = useRef(null);
 
@@ -21,6 +49,11 @@ function Message({ message, isMe, authorProfile }) {
   const username = authorProfile?.username;
   const name = authorProfile?.name;
   const avatar = authorProfile?.photoBase64;
+
+  const iReacted = (emoji) => (reactions?.[emoji] || []).includes(currentUid);
+
+  const timeText = useMemo(() => formatTime(message.createdAt), [message.createdAt]);
+  const dateText = useMemo(() => formatDateIfNotToday(message.createdAt), [message.createdAt]);
 
   return (
     <div
@@ -57,26 +90,49 @@ function Message({ message, isMe, authorProfile }) {
         {message.text}
       </div>
 
+      {/* время/дата */}
+      <div className={`msg-meta ${isMe ? "me-meta" : ""}`}>
+        {dateText ? `${dateText} ${timeText}` : timeText}
+      </div>
+
       {showReactions && (
         <div className="reaction-popup">
           {emojiList.map((emoji) => (
-            <span
+            <button
               key={emoji}
+              type="button"
               className="emoji-option"
               onClick={() => {
+                toggleReaction(message.id, emoji, reactions);
                 setShowReactions(false);
               }}
+              style={{
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                fontSize: 18,
+                opacity: iReacted(emoji) ? 1 : 0.8,
+                transform: iReacted(emoji) ? "scale(1.1)" : "scale(1)",
+              }}
+              title={iReacted(emoji) ? "Убрать реакцию" : "Поставить реакцию"}
             >
               {emoji}
-            </span>
+            </button>
           ))}
         </div>
       )}
 
       <div className="reaction-counts">
         {Object.entries(reactions).map(([emoji, users]) =>
-          users?.length > 0 ? (
-            <span key={emoji} className="reaction-badge">
+          Array.isArray(users) && users.length > 0 ? (
+            <span
+              key={emoji}
+              className="reaction-badge"
+              style={{
+                fontWeight: (users || []).includes(currentUid) ? 800 : 400,
+              }}
+              title={(users || []).includes(currentUid) ? "Ты поставил" : ""}
+            >
               {emoji} {users.length}
             </span>
           ) : null
@@ -87,9 +143,3 @@ function Message({ message, isMe, authorProfile }) {
 }
 
 export default Message;
-
-
-
-
-
-

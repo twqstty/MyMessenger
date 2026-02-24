@@ -7,11 +7,13 @@ import {
   orderBy,
   onSnapshot,
   serverTimestamp,
-  doc,
-  getDoc,
   getDocs,
   where,
   documentId,
+  doc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
 } from "firebase/firestore";
 import Message from "./Message";
 import MessageInput from "./MessageInput";
@@ -26,9 +28,10 @@ function ChatWindow({ user }) {
   if (!user) return null;
 
   const [messages, setMessages] = useState([]);
-  const [profilesByUid, setProfilesByUid] = useState({}); // { uid: userDoc }
+  const [profilesByUid, setProfilesByUid] = useState({});
   const bottomRef = useRef(null);
 
+  // 1) realtime сообщения
   useEffect(() => {
     const q = query(
       collection(db, "chats", "globalChat", "messages"),
@@ -47,46 +50,42 @@ function ChatWindow({ user }) {
     return () => unsubscribe();
   }, []);
 
-  // автоскролл
+  // 2) автоскролл
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Собираем uid авторов и догружаем их профили
+  // 3) uid авторов
   const senderUids = useMemo(() => {
     const s = new Set();
     for (const m of messages) if (m.senderId) s.add(m.senderId);
     return Array.from(s);
   }, [messages]);
 
+  // 4) догружаем профили авторов пачками (in max 10)
   useEffect(() => {
     let cancelled = false;
 
     const loadMissingProfiles = async () => {
-      const missing = senderUids.filter((uid) => !profilesByUid[uid]);
+      const missing = senderUids.filter((uid) => !(uid in profilesByUid));
       if (missing.length === 0) return;
 
-      // Firestore where(documentId(), 'in', [...]) максимум 10
       const chunks = chunk(missing, 10);
       const loaded = {};
 
       for (const part of chunks) {
-        const q = query(
-          collection(db, "users"),
-          where(documentId(), "in", part)
-        );
+        const q = query(collection(db, "users"), where(documentId(), "in", part));
         const snap = await getDocs(q);
         snap.forEach((docSnap) => {
           loaded[docSnap.id] = docSnap.data();
         });
       }
 
-      // на всякий случай: если кого-то нет в users (старые сообщения), отметим пустым
       for (const uid of missing) {
-        if (!loaded[uid]) loaded[uid] = null;
+        if (!(uid in loaded)) loaded[uid] = null;
       }
 
-      if (!cancelled) {
+      if (!cancelled && Object.keys(loaded).length > 0) {
         setProfilesByUid((prev) => ({ ...prev, ...loaded }));
       }
     };
@@ -99,16 +98,31 @@ function ChatWindow({ user }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [senderUids]);
 
+  // 5) отправка сообщения
   const sendMessage = async (text) => {
     if (!text.trim()) return;
 
-    // Пишем в сообщение только senderId + text + createdAt
-    // Всё остальное берём из users
     await addDoc(collection(db, "chats", "globalChat", "messages"), {
       text,
       senderId: user.uid,
       createdAt: serverTimestamp(),
     });
+  };
+
+  // 6) toggle реакции (сохранение в Firestore)
+  const toggleReaction = async (messageId, emoji, currentReactions) => {
+    const messageRef = doc(db, "chats", "globalChat", "messages", messageId);
+    const users = currentReactions?.[emoji] || [];
+
+    if (users.includes(user.uid)) {
+      await updateDoc(messageRef, {
+        [`reactions.${emoji}`]: arrayRemove(user.uid),
+      });
+    } else {
+      await updateDoc(messageRef, {
+        [`reactions.${emoji}`]: arrayUnion(user.uid),
+      });
+    }
   };
 
   return (
@@ -122,9 +136,11 @@ function ChatWindow({ user }) {
             message={msg}
             isMe={msg.senderId === user.uid}
             authorProfile={profilesByUid[msg.senderId] || null}
+            toggleReaction={toggleReaction}
+            currentUid={user.uid}
           />
         ))}
-        <div ref={bottomRef}></div>
+        <div ref={bottomRef} />
       </div>
 
       <MessageInput sendMessage={sendMessage} />

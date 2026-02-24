@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { auth, db } from "../firebase/firebase";
 import { signOut, updateProfile } from "firebase/auth";
 import { doc, getDoc, runTransaction, serverTimestamp } from "firebase/firestore";
+import { makeDefaultAvatarDataUri } from "../utils/avatar";
 
 function normalizeUsername(s) {
   return s.trim().toLowerCase().replace(/\s+/g, "_");
@@ -64,7 +65,8 @@ function Profile({ user }) {
 
       const newPhotoBase64 = photoFile ? await toBase64(photoFile) : null;
       const oldUsername = profile?.username;
-
+      const finalPhoto = newPhotoBase64 || profile?.photoBase64 || makeDefaultAvatarDataUri(username || name);
+      
       await runTransaction(db, async (tx) => {
         const userRef = doc(db, "users", user.uid);
         const userSnap = await tx.get(userRef);
@@ -87,13 +89,13 @@ function Profile({ user }) {
         }
 
         tx.update(userRef, {
-          name: name.trim(),
-          username,
-          bio: bio.trim() || null,
-          birthdate: birthdate || null,
-          ...(newPhotoBase64 ? { photoBase64: newPhotoBase64 } : {}),
-          updatedAt: serverTimestamp(),
-        });
+        name: name.trim(),
+        username,
+        bio: bio.trim() || null,
+        birthdate: birthdate || null,
+        photoBase64: finalPhoto,
+        updatedAt: serverTimestamp(),
+        });         
       });
 
       await updateProfile(auth.currentUser, { displayName: name.trim() });
