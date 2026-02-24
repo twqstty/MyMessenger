@@ -5,33 +5,25 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 
 function App() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(undefined);
 
   useEffect(() => {
-    let unsubscribe = null;
-
-    (async () => {
+    const initAuth = async () => {
       try {
-        // Завершаем редирект-логин (если он был)
         await getRedirectResult(auth);
       } catch (e) {
-        console.error("Redirect error:", e);
+        console.error(e);
       }
 
-      // После этого слушаем состояние авторизации
-      unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-        setUser(currentUser);
-        setLoading(false);
+      onAuthStateChanged(auth, (currentUser) => {
+        setUser(currentUser || null);
       });
-    })();
-
-    return () => {
-      if (unsubscribe) unsubscribe();
     };
+
+    initAuth();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+  if (user === undefined) return <div>Loading...</div>;
 
   return user ? <Home user={user} /> : <Login />;
 }
