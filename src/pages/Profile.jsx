@@ -4,6 +4,7 @@ import { auth, db } from "../firebase/firebase";
 import { signOut, updateProfile } from "firebase/auth";
 import { doc, getDoc, runTransaction, serverTimestamp } from "firebase/firestore";
 import { makeDefaultAvatarDataUri } from "../utils/avatar";
+import "../styles.css";
 
 function normalizeUsername(s) {
   return s.trim().toLowerCase().replace(/\s+/g, "_");

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { db } from "../firebase/firebase";
 import {
@@ -12,7 +12,7 @@ import {
 } from "firebase/firestore";
 
 function normalizeUsername(s) {
-  return s.trim().toLowerCase().replace(/\s+/g, "_");
+  return (s || "").trim().toLowerCase().replace(/\s+/g, "_");
 }
 
 function SearchUsers() {
@@ -23,10 +23,10 @@ function SearchUsers() {
 
   const qNorm = useMemo(() => normalizeUsername(qText), [qText]);
 
-  const search = async () => {
+  const search = async (needle) => {
     setError("");
     setResults([]);
-    if (!qNorm) return;
+    if (!needle) return;
 
     setBusy(true);
     try {
@@ -35,8 +35,8 @@ function SearchUsers() {
       const qq = query(
         usersRef,
         orderBy("username"),
-        startAt(qNorm),
-        endAt(qNorm + "\uf8ff"),
+        startAt(needle),
+        endAt(needle + "\uf8ff"),
         limit(20)
       );
 
@@ -49,61 +49,82 @@ function SearchUsers() {
     }
   };
 
+  // Автопоиск с debounce (250ms)
+  useEffect(() => {
+    if (!qNorm) {
+      setResults([]);
+      setError("");
+      setBusy(false);
+      return;
+    }
+
+    const t = setTimeout(() => {
+      search(qNorm);
+    }, 250);
+
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [qNorm]);
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    search(qNorm);
+  };
+
+  const clear = () => {
+    setQText("");
+    setResults([]);
+    setError("");
+  };
+
   return (
-    <div style={{ padding: 20, maxWidth: 520, margin: "0 auto" }}>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
+    <div className="search-container">
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
         <Link to="/">← Чат</Link>
         <Link to="/profile">Мой профиль</Link>
       </div>
 
-      <h2>Поиск пользователей</h2>
+      <h2 style={{ marginTop: 0 }}>Поиск пользователей</h2>
 
-      <div style={{ display: "flex", gap: 8 }}>
+      <form onSubmit={onSubmit} style={{ display: "flex", gap: 10, alignItems: "center" }}>
         <input
+          className="search-input"
           placeholder="Никнейм (например: sigma)"
           value={qText}
           onChange={(e) => setQText(e.target.value)}
-          style={{ flex: 1 }}
         />
-        <button onClick={search} disabled={busy}>
+
+        <button className="top-btn search" type="submit" disabled={busy || !qNorm}>
           {busy ? "..." : "Найти"}
         </button>
-      </div>
 
-      <div style={{ fontSize: 12, opacity: 0.7, marginTop: 6 }}>
+        <button
+          className="top-btn logout"
+          type="button"
+          onClick={clear}
+          disabled={busy && !qText}
+        >
+          Очистить
+        </button>
+      </form>
+
+      <div style={{ fontSize: 12, opacity: 0.7, marginTop: 8 }}>
         Ищет по началу ника: <b>@{qNorm || "..."}</b>
       </div>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className="auth-error">{error}</p>}
 
       <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 10 }}>
         {results.map((u) => (
-          <Link
-            key={u.id}
-            to={`/u/${u.username}`}
-            style={{
-              display: "flex",
-              gap: 10,
-              alignItems: "center",
-              padding: 10,
-              border: "1px solid #ddd",
-              borderRadius: 10,
-              textDecoration: "none",
-              color: "inherit",
-            }}
-          >
-            {u.photoBase64 ? (
-              <img
-                src={u.photoBase64}
-                alt="avatar"
-                style={{ width: 44, height: 44, borderRadius: "50%", objectFit: "cover" }}
-              />
-            ) : (
-              <div style={{ width: 44, height: 44, borderRadius: "50%", background: "#ddd" }} />
-            )}
+          <Link key={u.id} to={`/u/${u.username}`} className="search-result">
+            <img
+              src={u.photoBase64}
+              alt="avatar"
+              className="search-avatar"
+            />
             <div>
-              <div style={{ fontWeight: 800 }}>{u.name}</div>
-              <div style={{ opacity: 0.75 }}>@{u.username}</div>
+              <div className="search-name">{u.name}</div>
+              <div className="search-username">@{u.username}</div>
             </div>
           </Link>
         ))}

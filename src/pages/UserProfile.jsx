@@ -68,48 +68,42 @@ function UserProfile() {
   const avatarSrc =
     profile?.photoBase64 || makeDefaultAvatarDataUri(profile?.username || profile?.name || username);
 
-  return (
-    <div style={{ padding: 20, maxWidth: 520, margin: "0 auto" }}>
-      <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-        <Link to="/">← Чат</Link>
-        <Link to="/search" style={{ opacity: 0.75 }}>
-          Поиск
-        </Link>
-      </div>
+return (
+  <div className="profile-container">
+    <Link to="/">← Назад</Link>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+    {error && <p style={{ color: "red" }}>{error}</p>}
 
-      {profile && (
-        <>
-          <div style={{ display: "flex", gap: 12, alignItems: "center", marginTop: 12 }}>
-            <img
-              src={avatarSrc}
-              alt="avatar"
-              style={{ width: 72, height: 72, borderRadius: "50%", objectFit: "cover" }}
-            />
-
-            <div>
-              <div style={{ fontSize: 22, fontWeight: 800 }}>{profile.name || "Unknown"}</div>
-              <div style={{ opacity: 0.75 }}>@{profile.username || username}</div>
-            </div>
+    {profile && (
+      <>
+        <div className="profile-header">
+          <img
+            src={profile.photoBase64}
+            alt="avatar"
+            className="profile-avatar"
+          />
+          <div>
+            <div className="profile-name">{profile.name}</div>
+            <div className="profile-username">@{profile.username}</div>
           </div>
+        </div>
 
-          <div style={{ marginTop: 12 }}>
-            <div style={{ fontWeight: 700 }}>О себе</div>
-            <div style={{ whiteSpace: "pre-wrap", opacity: 0.9 }}>
-              {profile.bio ? profile.bio : "Пусто"}
-            </div>
+        <div className="profile-section">
+          <div className="profile-section-title">О себе</div>
+          <div className="profile-text">
+            {profile.bio ? profile.bio : "Пользователь ничего не написал."}
           </div>
+        </div>
 
-          {profile.birthdate && (
-            <div style={{ marginTop: 12, opacity: 0.8 }}>
-              Дата рождения: {profile.birthdate}
-            </div>
-          )}
-        </>
-      )}
-    </div>
-  );
+        {profile.birthdate && (
+          <div className="profile-birth">
+            Дата рождения: {profile.birthdate}
+          </div>
+        )}
+      </>
+    )}
+  </div>
+);
 }
 
 export default UserProfile;
