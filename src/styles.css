@@ -1,7 +1,7 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #4caf50, #2e7d32);
+  background: linear-gradient(135deg,#857bf7,#0c170c);
 }
 
 .center {
@@ -163,4 +163,60 @@ body {
   color: #d32f2f;
   font-size: 13px;
   text-align: center;
+}
+
+
+/* ===== TOP ACTION BUTTONS ===== */
+
+.top-actions {
+  position: fixed;
+  top: 15px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+  z-index: 20;
+}
+
+.top-btn {
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Поиск */
+.top-btn.search {
+  background: #1976d2;
+  color: white;
+}
+
+.top-btn.search:hover {
+  background: #1565c0;
+}
+
+/* Профиль */
+.top-btn.profile {
+  background: #6a1b9a;
+  color: white;
+}
+
+.top-btn.profile:hover {
+  background: #4a148c;
+}
+
+/* Выйти */
+.top-btn.logout {
+  background: #e53935;
+  color: white;
+}
+
+.top-btn.logout:hover {
+  background: #c62828;
 }
