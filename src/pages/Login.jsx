@@ -1,6 +1,5 @@
 import { auth } from "../firebase/firebase";
-import { GoogleAuthProvider } from "firebase/auth";
-import { signInWithRedirect } from "firebase/auth";
+import { GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
 
 function Login() {
   const handleLogin = async () => {
@@ -10,9 +9,7 @@ function Login() {
 
   return (
     <div className="center">
-      <button onClick={handleLogin}>
-        Войти через Google
-      </button>
+      <button onClick={handleLogin}>Войти через Google</button>
     </div>
   );
 }

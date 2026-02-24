@@ -9,18 +9,26 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setLoading(false);
-    });
+    let unsubscribe = null;
 
-    return () => unsubscribe();
-  }, []);
+    (async () => {
+      try {
+        // Завершаем редирект-логин (если он был)
+        await getRedirectResult(auth);
+      } catch (e) {
+        console.error("Redirect error:", e);
+      }
 
-  useEffect(() => {
-    getRedirectResult(auth).catch((error) => {
-      console.error(error);
-    });
+      // После этого слушаем состояние авторизации
+      unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+        setUser(currentUser);
+        setLoading(false);
+      });
+    })();
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, []);
 
   if (loading) return <div>Loading...</div>;
