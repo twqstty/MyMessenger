@@ -71,3 +71,16 @@ body {
   background: #1f1c2f;
   color: white;
 }
+.msg-meta {
+  position: absolute;
+  right: 10px;
+  bottom: 6px;
+  font-size: 10px;
+  color: #888;        /* серый */
+  opacity: 0.9;
+}
+
+/* чтобы текст не наезжал на время */
+.message {
+  padding-bottom: 18px;
+}
