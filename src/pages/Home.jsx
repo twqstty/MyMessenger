@@ -6,10 +6,21 @@ import { auth } from "../firebase/firebase";
 function Home({ user }) {
   return (
     <div className="app">
-      <div style={{ position: "fixed", top: 10, right: 10, display: "flex", gap: 10 }}>
-        <Link to="/search">Поиск</Link>
-        <Link to="/profile">Профиль</Link>
-        <button onClick={() => signOut(auth)}>Выйти</button>
+      <div className="top-actions">
+        <Link to="/search" className="top-btn search">
+          🔎 Поиск
+        </Link>
+
+        <Link to="/profile" className="top-btn profile">
+          👤 Профиль
+        </Link>
+
+        <button
+          onClick={() => signOut(auth)}
+          className="top-btn logout"
+        >
+          🚪 Выйти
+        </button>
       </div>
 
       <ChatWindow user={user} />
