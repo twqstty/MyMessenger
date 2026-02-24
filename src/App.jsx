@@ -5,7 +5,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 
 function App() {
-  const [user, setUser] = useState(undefined);
+  const [user, setUser] = useState(undefined); // undefined = loading
 
   useEffect(() => {
     let unsubscribe;
@@ -14,13 +14,18 @@ function App() {
       await authReady;
 
       try {
-        await getRedirectResult(auth);
+        const result = await getRedirectResult(auth);
+        if (result?.user) {
+          // ВАЖНО: если redirect вернул user — сразу сохраняем
+          setUser(result.user);
+        }
       } catch (e) {
         console.error("getRedirectResult error:", e);
       }
 
       unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-        setUser(currentUser || null);
+        // Если уже есть user из redirectResult — не перетираем его null-ом
+        setUser((prev) => (prev ? prev : (currentUser || null)));
       });
     })();
 

@@ -3,10 +3,14 @@ import { GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
 
 function Login() {
   const handleLogin = async () => {
-    await authReady;
-
-    const provider = new GoogleAuthProvider();
-    await signInWithRedirect(auth, provider);
+    try {
+      await authReady;
+      const provider = new GoogleAuthProvider();
+      await signInWithRedirect(auth, provider);
+    } catch (e) {
+      console.error("Login error:", e);
+      alert(`Login error: ${e?.code || e}`);
+    }
   };
 
   return (
