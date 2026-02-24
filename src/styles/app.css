@@ -193,15 +193,15 @@ body {
   right: 10px;
   bottom: 6px;
   font-size: 10px;
-  color: gray;        /* серый */
+  color: gray;
   opacity: 0.9;
 }
 
-/* чтобы текст не наезжал на время */
+
 .message {
   padding-bottom: 18px;
 }
-/* на моих сообщениях чуть контрастнее */
+
 .message.me .msg-meta {
   opacity: 0.8;
 }

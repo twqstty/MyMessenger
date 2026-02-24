@@ -100,54 +100,77 @@ function AuthPage() {
   };
 
   return (
-    <div className="center" style={{ padding: 20 }}>
-      <div style={{ width: 360, maxWidth: "95vw" }}>
-        <h2 style={{ marginTop: 0 }}>{isLogin ? "Вход" : "Регистрация"}</h2>
+  <div className="auth-wrapper">
+    <div className="auth-card">
+      <h2>{isLogin ? "Вход в SigmaChat" : "Создать аккаунт"}</h2>
 
-        {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <div className="auth-error">{error}</div>}
 
-        <form onSubmit={isLogin ? handleLogin : handleRegister} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {!isLogin && (
-            <>
-              <input placeholder="Имя" value={name} onChange={(e) => setName(e.target.value)} />
+      <form onSubmit={isLogin ? handleLogin : handleRegister}>
+        {!isLogin && (
+          <>
+            <input
+              placeholder="Имя"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
 
-              <input
-                placeholder="Никнейм (например: sigma_boy)"
-                value={usernameRaw}
-                onChange={(e) => setUsernameRaw(e.target.value)}
-              />
-              <div style={{ fontSize: 12, opacity: 0.7 }}>
-                Будет: <b>@{username || "..."}</b>
-              </div>
+            <input
+              placeholder="Никнейм"
+              value={usernameRaw}
+              onChange={(e) => setUsernameRaw(e.target.value)}
+            />
 
-              <label style={{ fontSize: 13 }}>
-                Фото профиля:
-                <input type="file" accept="image/*" onChange={(e) => setPhotoFile(e.target.files?.[0] || null)} />
-              </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setPhotoFile(e.target.files?.[0] || null)}
+            />
 
-              <label style={{ fontSize: 13 }}>
-                Дата рождения (необязательно):
-                <input type="date" value={birthdate} onChange={(e) => setBirthdate(e.target.value)} />
-              </label>
+            <input
+              type="date"
+              value={birthdate}
+              onChange={(e) => setBirthdate(e.target.value)}
+            />
 
-              <textarea placeholder="О себе (необязательно)" value={bio} onChange={(e) => setBio(e.target.value)} rows={3} />
-            </>
-          )}
+            <textarea
+              placeholder="О себе"
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              rows={3}
+            />
+          </>
+        )}
 
-          <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-          <input type="password" placeholder="Пароль" value={password} onChange={(e) => setPassword(e.target.value)} />
+        <input
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-          <button disabled={busy} type="submit">
-            {busy ? "Подождите..." : isLogin ? "Войти" : "Создать аккаунт"}
-          </button>
-        </form>
+        <input
+          type="password"
+          placeholder="Пароль"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-        <button disabled={busy} onClick={() => setIsLogin((v) => !v)} style={{ marginTop: 10 }}>
-          {isLogin ? "Нет аккаунта? Регистрация" : "Уже есть аккаунт? Войти"}
+        <button type="submit">
+          {isLogin ? "Войти" : "Зарегистрироваться"}
         </button>
+      </form>
+
+      <div
+        className="auth-switch"
+        onClick={() => setIsLogin((v) => !v)}
+      >
+        {isLogin
+          ? "Нет аккаунта? Регистрация"
+          : "Уже есть аккаунт? Войти"}
       </div>
     </div>
-  );
+  </div>
+);
 }
 
 export default AuthPage;
