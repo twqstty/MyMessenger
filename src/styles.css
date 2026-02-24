@@ -171,7 +171,8 @@ body {
 .top-actions {
   position: fixed;
   top: 15px;
-  right: 20px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   gap: 10px;
   z-index: 20;
