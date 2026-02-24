@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { auth, authReady } from "./firebase/firebase";
 import { onAuthStateChanged, getRedirectResult } from "firebase/auth";
 import Home from "./pages/Home";
-import Login from "./pages/Login";
+import AuthPage from "./pages/AuthPage";
 
 function App() {
   const [user, setUser] = useState(undefined); // undefined = loading
@@ -35,7 +35,7 @@ function App() {
   }, []);
 
   if (user === undefined) return <div>Loading...</div>;
-  return user ? <Home user={user} /> : <Login />;
+  return user ? <Home user={user} /> : <AuthPage />;
 }
 
 export default App;
