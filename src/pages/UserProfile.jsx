@@ -69,39 +69,50 @@ function UserProfile() {
     profile?.photoBase64 || makeDefaultAvatarDataUri(profile?.username || profile?.name || username);
 
 return (
-  <div className="profile-container">
-    <Link to="/">← Назад</Link>
+  <div className="profile-wrapper">
+    <div className="profile-card">
 
-    {error && <p style={{ color: "red" }}>{error}</p>}
+      <Link to="/" className="profile-back">
+        ← Назад в чат
+      </Link>
 
-    {profile && (
-      <>
-        <div className="profile-header">
-          <img
-            src={profile.photoBase64}
-            alt="avatar"
-            className="profile-avatar"
-          />
-          <div>
-            <div className="profile-name">{profile.name}</div>
-            <div className="profile-username">@{profile.username}</div>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+
+      {profile && (
+        <>
+          <div className="profile-top">
+            <img
+              src={profile.photoBase64}
+              alt="avatar"
+              className="profile-avatar"
+            />
+
+            <div className="profile-info">
+              <div className="profile-name">
+                {profile.name}
+              </div>
+              <div className="profile-username">
+                @{profile.username}
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div className="profile-section">
-          <div className="profile-section-title">О себе</div>
-          <div className="profile-text">
-            {profile.bio ? profile.bio : "Пользователь ничего не написал."}
+          <div className="profile-section">
+            <div className="profile-section-title">О себе</div>
+            <div className="profile-bio">
+              {profile.bio || "Пользователь ничего не написал."}
+            </div>
           </div>
-        </div>
 
-        {profile.birthdate && (
-          <div className="profile-birth">
-            Дата рождения: {profile.birthdate}
-          </div>
-        )}
-      </>
-    )}
+          {profile.birthdate && (
+            <div className="profile-birth">
+              Дата рождения: {profile.birthdate}
+            </div>
+          )}
+        </>
+      )}
+
+    </div>
   </div>
 );
 }
