@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { db } from "../firebase/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { makeDefaultAvatarDataUri } from "../utils/avatar";
+import "../styles.css";
 
 function normalizeUsername(s) {
   return (s || "").trim().toLowerCase().replace(/\s+/g, "_");
