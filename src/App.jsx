@@ -1,41 +1,41 @@
 import { useEffect, useState } from "react";
-import { auth, authReady } from "./firebase/firebase";
-import { onAuthStateChanged, getRedirectResult } from "firebase/auth";
-import Home from "./pages/Home";
+import { auth } from "./firebase/firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
 import AuthPage from "./pages/AuthPage";
+import Home from "./pages/Home";
+import Profile from "./pages/Profile";
 
 function App() {
-  const [user, setUser] = useState(undefined); // undefined = loading
+  const [user, setUser] = useState(undefined);
 
   useEffect(() => {
-    let unsubscribe;
-
-    (async () => {
-      await authReady;
-
-      try {
-        const result = await getRedirectResult(auth);
-        if (result?.user) {
-          // ВАЖНО: если redirect вернул user — сразу сохраняем
-          setUser(result.user);
-        }
-      } catch (e) {
-        console.error("getRedirectResult error:", e);
-      }
-
-      unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-        // Если уже есть user из redirectResult — не перетираем его null-ом
-        setUser((prev) => (prev ? prev : (currentUser || null)));
-      });
-    })();
-
-    return () => {
-      if (unsubscribe) unsubscribe();
-    };
+    const unsub = onAuthStateChanged(auth, (u) => setUser(u || null));
+    return () => unsub();
   }, []);
 
   if (user === undefined) return <div>Loading...</div>;
-  return user ? <Home user={user} /> : <AuthPage />;
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/auth"
+          element={user ? <Navigate to="/" /> : <AuthPage />}
+        />
+        <Route
+          path="/"
+          element={user ? <Home user={user} /> : <Navigate to="/auth" />}
+        />
+        <Route
+          path="/profile"
+          element={user ? <Profile user={user} /> : <Navigate to="/auth" />}
+        />
+        <Route path="*" element={<Navigate to={user ? "/" : "/auth"} />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App;
