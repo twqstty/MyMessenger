@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AuthPage from "./pages/AuthPage";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
+import UserProfile from "./pages/UserProfile";
+import SearchUsers from "./pages/SearchUsers";
 
 function App() {
   const [user, setUser] = useState(undefined);
@@ -31,6 +33,14 @@ function App() {
         <Route
           path="/profile"
           element={user ? <Profile user={user} /> : <Navigate to="/auth" />}
+        />
+        <Route
+          path="/u/:username"
+          element={user ? <UserProfile /> : <Navigate to="/auth" />}
+        />
+        <Route
+          path="/search"
+          element={user ? <SearchUsers /> : <Navigate to="/auth" />}
         />
         <Route path="*" element={<Navigate to={user ? "/" : "/auth"} />} />
       </Routes>

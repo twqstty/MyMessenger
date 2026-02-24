@@ -166,6 +166,22 @@ body {
   border-radius: 12px;
   font-size: 13px;
 }
+.reaction-popup {
+  position: absolute;
+  bottom: 100%;
+  left: 10px;
+  background: white;
+  padding: 6px 10px;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+
+.emoji-option { cursor: pointer; font-size: 18px; }
+.reaction-badge { background: #f0f0f0; padding: 3px 8px; border-radius: 12px; font-size: 13px; }
+.reaction-counts { margin-top: 6px; display: flex; gap: 6px; flex-wrap: wrap; }
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(5px); }
