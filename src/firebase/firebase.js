@@ -22,6 +22,11 @@ const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 
-setPersistence(auth, browserLocalPersistence).catch(() => {
-  return setPersistence(auth, browserSessionPersistence);
-});
+export const authReady = (async () => {
+  try {
+    await setPersistence(auth, browserLocalPersistence);
+  } catch (e) {
+    console.warn("Local persistence failed -> fallback to session", e?.code || e);
+    await setPersistence(auth, browserSessionPersistence);
+  }
+})();

@@ -1,8 +1,10 @@
-import { auth } from "../firebase/firebase";
+import { auth, authReady } from "../firebase/firebase";
 import { GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
 
 function Login() {
   const handleLogin = async () => {
+    await authReady;
+
     const provider = new GoogleAuthProvider();
     await signInWithRedirect(auth, provider);
   };
